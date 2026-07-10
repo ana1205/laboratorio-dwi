@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio DWI </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: #f4f7fc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .app-wrapper {
+            max-width: 1100px;
+            width: 100%;
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0, 20, 40, 0.25);
+            padding: 1.8rem 2rem 2.5rem;
+            transition: 0.3s;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0b2b44;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid #e6edf4;
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #4b6f8c;
+            margin-left: 0.5rem;
+        }
+
+        /* navegación SPA */
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #dfe8f0;
+            padding-bottom: 0.9rem;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 0.6rem 1.3rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1f4a6e;
+            border-radius: 40px;
+            transition: 0.2s;
+            cursor: pointer;
+            background: #eef4f9;
+        }
+
+        .nav-btn:hover {
+            background: #d7e3ef;
+        }
+
+        .nav-btn.active {
+            background: #1f4a6e;
+            color: white;
+            box-shadow: 0 4px 8px rgba(20, 60, 100, 0.2);
+        }
+
+        /* secciones */
+        .section {
+            display: none;
+            animation: fade 0.25s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fade {
+            0% { opacity: 0.5; transform: translateY(6px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* tarjetas */
+        .card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 1.8rem 1.8rem 2rem;
+            box-shadow: 0 6px 18px rgba(0, 20, 30, 0.06);
+            border: 1px solid #eef3f8;
+            margin-top: 0.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #10344e;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card h2 span {
+            background: #d7e3ef;
+            font-size: 0.8rem;
+            padding: 0.15rem 0.7rem;
+            border-radius: 30px;
+            color: #1f4a6e;
+            font-weight: 500;
+        }
+
+        /* formularios */
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #1f3d55;
+            min-width: 80px;
+        }
+
+        .form-control {
+            padding: 0.6rem 1rem;
+            border: 1px solid #cfdde9;
+            border-radius: 40px;
+            font-size: 0.95rem;
+            background: white;
+            transition: 0.2s;
+            flex: 1 1 160px;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1f4a6e;
+            box-shadow: 0 0 0 3px rgba(31, 74, 110, 0.15);
+        }
+
+        .form-control.inline-select {
+            flex: 0 1 130px;
+        }
+
+        .btn {
+            background: #1f4a6e;
+            border: none;
+            color: white;
+            padding: 0.6rem 1.8rem;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(20, 60, 100, 0.1);
+            border: 1px solid transparent;
+        }
+
+        .btn:hover {
+            background: #123a57;
+            transform: scale(0.97);
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            pointer-events: none;
+            filter: grayscale(0.3);
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: #b13e4b;
+        }
+
+        .btn-danger:hover {
+            background: #8f2f3b;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #1f4a6e;
+            border: 1px solid #b6cedf;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #e3edf5;
+            transform: none;
+        }
+
+        .result-box {
+            background: #eef4f9;
+            padding: 1rem 1.5rem;
+            border-radius: 60px;
+            margin-top: 1.2rem;
+            font-weight: 500;
+            color: #0b2b44;
+            display: inline-block;
+            border: 1px solid #d6e2ed;
+        }
+
+        .task-list {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .task-item {
+            background: #f8fafc;
+            border-radius: 60px;
+            padding: 0.5rem 0.8rem 0.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #e2ebf3;
+            transition: 0.2s;
+        }
+
+        .task-item.completed {
+            background: #ebf0f5;
+            opacity: 0.75;
+            order: 999;
+        }
+
+        .task-item.completed .task-desc {
+            text-decoration: line-through;
+            color: #3a5f7a;
+        }
+
+        .task-desc {
+            font-size: 1rem;
+            font-weight: 450;
+            color: #0c2b41;
+            word-break: break-word;
+            flex: 1;
+            margin-right: 0.8rem;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-wrap: wrap;
+        }
+
+        .task-actions button {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 30px;
+            transition: 0.15s;
+        }
+
+        .task-actions .toggle-btn {
+            color: #1f6e4a;
+        }
+        .task-actions .toggle-btn:hover {
+            background: #d2e6db;
+        }
+        .task-actions .del-btn {
+            color: #b13e4b;
+        }
+        .task-actions .del-btn:hover {
+            background: #f0d6d9;
+        }
+
+        .add-task-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .add-task-row input {
+            flex: 2 1 200px;
+        }
+
+        .text-muted {
+            color: #4b6f8c;
+            font-size: 0.9rem;
+        }
+
+        .mt-2 { margin-top: 0.8rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+
+        @media (max-width: 600px) {
+            .app-wrapper { padding: 1.2rem; }
+            .nav-btn { padding: 0.4rem 1rem; font-size: 0.9rem; }
+            .card { padding: 1.2rem; }
+            .form-group { flex-direction: column; align-items: stretch; }
+            .form-group label { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-wrapper">
+    <h1>🧪 Laboratorio DWI <small>3 herramientas interactivas</small></h1>
+
+    <!-- Menú SPA -->
+    <nav class="nav-menu">
+        <button class="nav-btn active" data-section="sec1">📅 Edad</button>
+        <button class="nav-btn" data-section="sec2">🌡️ Conversor térmico</button>
+        <button class="nav-btn" data-section="sec3">✅ Gestor de tareas</button>
+    </nav>
+
+    <!-- =========== SECCIÓN 1: EDAD ============= -->
+    <section id="sec1" class="section active">
+        <div class="card">
+            <h2><span>01</span> Tiempo desde el nacimiento</h2>
+            <div class="form-group">
+                <label>Día</label>
+                <input type="number" id="birthDay" class="form-control" placeholder="1-31" min="1" max="31" value="15">
+                <label>Mes</label>
+                <input type="number" id="birthMonth" class="form-control" placeholder="1-12" min="1" max="12" value="6">
+                <label>Año</label>
+                <input type="number" id="birthYear" class="form-control" placeholder="1990" value="2000">
+            </div>
+            <button id="calcAgeBtn" class="btn">Calcular edad</button>
+            <div id="ageResult" class="result-box" style="margin-top: 1.2rem;">Esperando datos…</div>
+        </div>
+    </section>
+
+    <!-- =========== SECCIÓN 2: CONVERSOR ============= -->
+    <section id="sec2" class="section">
+        <div class="card">
+            <h2><span>02</span> Conversor de unidades térmicas</h2>
+            <div class="form-group">
+                <label>Valor</label>
+                <input type="number" id="tempValue" class="form-control" placeholder="0" step="any">
+                <label>Origen</label>
+                <select id="tempFrom" class="form-control inline-select">
+                    <option value="C">Celsius</option>
+                    <option value="F">Fahrenheit</option>
+                    <option value="K">Kelvin</option>
+                </select>
+                <label>Destino</label>
+                <select id="tempTo" class="form-control inline-select">
+                    <option value="C">Celsius</option>
+                    <option value="F">Fahrenheit</option>
+                    <option value="K">Kelvin</option>
+                </select>
+            </div>
+            <button id="convertBtn" class="btn" disabled>Convertir</button>
+            <div id="tempResult" class="result-box" style="margin-top: 1.2rem;">——</div>
+        </div>
+    </section>
+
+    <!-- =========== SECCIÓN 3: TAREAS ============= -->
+    <section id="sec3" class="section">
+        <div class="card">
+            <h2><span>03</span> Gestor de actividades</h2>
+            <div class="add-task-row">
+                <input type="text" id="newTaskInput" class="form-control" placeholder="Escribe una tarea…">
+                <button id="addTaskBtn" class="btn">Agregar</button>
+            </div>
+            <div id="taskContainer" class="task-list">
+                <!-- renderizado dinámico -->
+            </div>
+            <div class="text-muted mt-2">✔ Marca / desmarca · 🗑️ elimina</div>
+        </div>
+    </section>
+</div>
+
+<script>
+    (function() {
+        "use strict";
+
+        // ----- NAVEGACIÓN SPA -----
+        const sections = {
+            sec1: document.getElementById('sec1'),
+            sec2: document.getElementById('sec2'),
+            sec3: document.getElementById('sec3')
+        };
+        const navBtns = document.querySelectorAll('.nav-btn');
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const target = this.dataset.section;
+                navBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                Object.keys(sections).forEach(key => {
+                    sections[key].classList.toggle('active', key === target);
+                });
+            });
+        });
+
+        // ----- PROYECTO 1: EDAD -----
+        const birthDay = document.getElementById('birthDay');
+        const birthMonth = document.getElementById('birthMonth');
+        const birthYear = document.getElementById('birthYear');
+        const calcAgeBtn = document.getElementById('calcAgeBtn');
+        const ageResult = document.getElementById('ageResult');
+
+        function calculateAge() {
+            const d = parseInt(birthDay.value);
+            const m = parseInt(birthMonth.value);
+            const y = parseInt(birthYear.value);
+
+            if (isNaN(d) || isNaN(m) || isNaN(y) || d < 1 || d > 31 || m < 1 || m > 12 || y < 1900 || y > 2100) {
+                ageResult.textContent = '⚠️ Fecha inválida. Verifica día, mes y año.';
+                return;
+            }
+            const birthDate = new Date(y, m - 1, d);
+            if (birthDate.getDate() !== d || birthDate.getMonth() !== m - 1 || birthDate.getFullYear() !== y) {
+                ageResult.textContent = '⚠️ Fecha inválida (ej. 31 de febrero).';
+                return;
+            }
+            const now = new Date();
+            let years = now.getFullYear() - birthDate.getFullYear();
+            let months = now.getMonth() - birthDate.getMonth();
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            if (years < 0) {
+                ageResult.textContent = '⚠️ La fecha de nacimiento no puede ser futura.';
+                return;
+            }
+            ageResult.textContent = `⏳ ${years} años y ${months} meses`;
+        }
+
+        calcAgeBtn.addEventListener('click', calculateAge);
+        // validación básica en cambio de campos (opcional)
+        [birthDay, birthMonth, birthYear].forEach(field => {
+            field.addEventListener('change', () => {
+                // no calcula automáticamente, solo para validación
+            });
+        });
+
+        // ----- PROYECTO 2: CONVERSOR TÉRMICO -----
+        const tempValue = document.getElementById('tempValue');
+        const tempFrom = document.getElementById('tempFrom');
+        const tempTo = document.getElementById('tempTo');
+        const convertBtn = document.getElementById('convertBtn');
+        const tempResult = document.getElementById('tempResult');
+
+        function checkConvertFields() {
+            const val = tempValue.value.trim();
+            const from = tempFrom.value;
+            const to = tempTo.value;
+            // todos los campos llenos, valor numérico no vacío y selecciones hechas
+            if (val !== '' && !isNaN(parseFloat(val)) && from && to) {
+                convertBtn.disabled = false;
+            } else {
+                convertBtn.disabled = true;
+            }
+        }
+
+        tempValue.addEventListener('input', checkConvertFields);
+        tempFrom.addEventListener('change', checkConvertFields);
+        tempTo.addEventListener('change', checkConvertFields);
+
+        function convertTemperature() {
+            const val = parseFloat(tempValue.value);
+            if (isNaN(val)) {
+                tempResult.textContent = '⚠️ Ingresa un número válido.';
+                return;
+            }
+            const from = tempFrom.value;
+            const to = tempTo.value;
+            if (from === to) {
+                tempResult.textContent = `➡️ ${val} ${from} = ${val} ${to}`;
+                return;
+            }
+            let kelvin;
+            // convertir a Kelvin
+            if (from === 'C') kelvin = val + 273.15;
+            else if (from === 'F') kelvin = (val - 32) * 5/9 + 273.15;
+            else if (from === 'K') kelvin = val;
+            else { tempResult.textContent = 'Error unidad origen'; return; }
+
+            let result;
+            if (to === 'C') result = kelvin - 273.15;
+            else if (to === 'F') result = (kelvin - 273.15) * 9/5 + 32;
+            else if (to === 'K') result = kelvin;
+            else { tempResult.textContent = 'Error unidad destino'; return; }
+
+            tempResult.textContent = `✅ ${val} ${from} = ${result.toFixed(3)} ${to}`;
+        }
+
+        convertBtn.addEventListener('click', convertTemperature);
+
+        // ----- PROYECTO 3: LISTA DE TAREAS -----
+        let tasks = [];  // { descripcion: string, completada: boolean }
+        const taskContainer = document.getElementById('taskContainer');
+        const newTaskInput = document.getElementById('newTaskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+
+        function renderTasks() {
+            // limpiar contenedor
+            taskContainer.innerHTML = '';
+            // orden: pendientes primero, luego completadas
+            const sorted = [...tasks].sort((a, b) => {
+                if (a.completada === b.completada) return 0;
+                return a.completada ? 1 : -1;
+            });
+            if (sorted.length === 0) {
+                const emptyMsg = document.createElement('div');
+                emptyMsg.className = 'text-muted';
+                emptyMsg.textContent = '📭 No hay tareas. Agrega una.';
+                taskContainer.appendChild(emptyMsg);
+                return;
+            }
+            sorted.forEach((task, index) => {
+                const item = document.createElement('div');
+                item.className = 'task-item' + (task.completada ? ' completed' : '');
+
+                const descSpan = document.createElement('span');
+                descSpan.className = 'task-desc';
+                descSpan.textContent = task.descripcion || 'Sin descripción';
+
+                const actions = document.createElement('div');
+                actions.className = 'task-actions';
+
+                // botón toggle (completar / descompletar)
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'toggle-btn';
+                toggleBtn.textContent = task.completada ? '↩️' : '✔️';
+                toggleBtn.title = task.completada ? 'Marcar como pendiente' : 'Marcar como completada';
+                toggleBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    // encontrar el índice real en el arreglo original
+                    const realIndex = tasks.findIndex(t => t.descripcion === task.descripcion && t.completada === task.completada);
+                    if (realIndex !== -1) {
+                        tasks[realIndex].completada = !tasks[realIndex].completada;
+                        renderTasks();
+                    }
+                });
+
+                // botón eliminar
+                const delBtn = document.createElement('button');
+                delBtn.className = 'del-btn';
+                delBtn.textContent = '🗑️';
+                delBtn.title = 'Eliminar tarea';
+                delBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const realIndex = tasks.findIndex(t => t.descripcion === task.descripcion && t.completada === task.completada);
+                    if (realIndex !== -1) {
+                        tasks.splice(realIndex, 1);
+                        renderTasks();
+                    }
+                });
+
+                actions.appendChild(toggleBtn);
+                actions.appendChild(delBtn);
+                item.appendChild(descSpan);
+                item.appendChild(actions);
+                taskContainer.appendChild(item);
+            });
+        }
+
+        function addTask() {
+            const desc = newTaskInput.value.trim();
+            if (desc === '') {
+                alert('Escribe una descripción para la tarea.');
+                return;
+            }
+            tasks.push({ descripcion: desc, completada: false });
+            newTaskInput.value = '';
+            renderTasks();
+        }
+
+        addTaskBtn.addEventListener('click', addTask);
+        newTaskInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTask();
+        });
+
+        // inicializar con ejemplos
+        tasks = [
+            { descripcion: 'Estudiar JavaScript', completada: false },
+            { descripcion: 'Hacer ejercicio', completada: true },
+            { descripcion: 'Leer documentación', completada: false }
+        ];
+        renderTasks();
+
+        // chequeo inicial de campos del conversor
+        checkConvertFields();
+
+        // valor por defecto para edad (mostrar cálculo)
+        calculateAge();
+
+        // pequeña mejora: al cargar la página, el conversor ya tiene valores por defecto
+        // se dispara el evento para habilitar el botón si los campos tienen valor inicial
+        setTimeout(() => {
+            if (tempValue.value.trim() !== '' && tempFrom.value && tempTo.value) {
+                convertBtn.disabled = false;
+            }
+        }, 50);
+
+    })();
+</script>
+</body>
+</html>
